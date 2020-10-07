@@ -91,6 +91,11 @@ class AddPost extends React.Component {
           <IconButton
             icon="send"
             color={colors.text}
+            disabled={
+              this.state.title.trim().length == 0 ||
+              this.state.body.trim().length == 0 ||
+              this.state.image == null
+            }
             onPress={() => this.submitPost()}
           />
         </View>
@@ -105,20 +110,20 @@ class AddPost extends React.Component {
           value={this.state.title}
           placeholder="Title"
           style={{
-            flex: 1,
             color: colors.text,
             padding: 12,
+            fontSize: 14,
           }}
           multiline={true}
           onChangeText={(value) => this.setState({ title: value })}
         />
-        <Divider style={{ backgroundColor: colors.text }} />
         <TextInput
           value={this.state.body}
           style={{
-            flex: 11,
+            flex: 1,
             color: colors.text,
             padding: 12,
+            fontSize: 14,
             textAlignVertical: "top",
           }}
           multiline={true}

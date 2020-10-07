@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Text, SafeAreaView, Switch } from "react-native";
+import { View, Text, SafeAreaView, Switch, AsyncStorage } from "react-native";
 import { List, withTheme } from "react-native-paper";
 import { store } from "../redux/ThemeState";
 
@@ -25,11 +25,15 @@ class Settings extends React.Component {
           description="Change the app's theme"
           right={() => (
             <Switch
-              onValueChange={(value) =>
-                store.dispatch({ type: value ? "dark" : "light" })
-              }
+              onValueChange={(value) => {
+                store.dispatch({ type: value ? "dark" : "light" });
+                AsyncStorage.setItem("dark", value ? "dark" : "light");
+              }}
               thumbColor={colors.primary}
-              trackColor={{ false: colors.text, true: colors.primary }}
+              trackColor={{
+                false: colors.placeholder,
+                true: colors.placeholder,
+              }}
               value={this.state.dark}
             />
           )}

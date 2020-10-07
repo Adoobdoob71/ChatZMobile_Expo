@@ -54,7 +54,7 @@ class SearchScreen extends React.Component {
           />
           <View
             style={{
-              backgroundColor: colors.backdrop,
+              backgroundColor: colors.card,
               paddingVertical: 4,
               paddingHorizontal: 12,
               flex: 1,

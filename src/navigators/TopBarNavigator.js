@@ -84,7 +84,6 @@ function TopBarNavigator(props) {
           }>
           <Menu.Item
             title="My Profile"
-            icon="account"
             disabled={authenticated == false}
             onPress={() => {
               if (authenticated) {
@@ -95,10 +94,16 @@ function TopBarNavigator(props) {
           />
           <Menu.Item
             title="Sign In"
-            icon="check"
             onPress={() => {
               setMenuVisible(false);
               props.navigation.navigate("SignIn");
+            }}
+          />
+          <Menu.Item
+            title="Register"
+            onPress={() => {
+              setMenuVisible(false);
+              // props.navigation.navigate("Register");
             }}
           />
         </Menu>

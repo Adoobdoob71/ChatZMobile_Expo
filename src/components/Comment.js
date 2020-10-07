@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Avatar, withTheme } from "react-native-paper";
 import * as firebase from "firebase";
 
@@ -20,19 +20,31 @@ class Comment extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
+    const styles = StyleSheet.create({
+      body: {
+        padding: 12,
+        flex: 1,
+        marginVertical: 8,
+        marginHorizontal: 8,
+        flexDirection: "row",
+        backgroundColor: colors.card,
+        borderRadius: 4,
+      },
+      text: {
+        color: colors.text,
+        fontSize: 14,
+        marginTop: 4,
+      },
+      placeholder: {
+        fontSize: 10,
+        color: colors.placeholder,
+      }
+    })
     if (this.state.userDetails == null) return null;
     else
       return (
         <View
-          style={{
-            padding: 12,
-            flex: 1,
-            marginVertical: 8,
-            marginHorizontal: 8,
-            flexDirection: "row",
-            backgroundColor: colors.card,
-            borderRadius: 4,
-          }}>
+          style={styles.body}>
           <Avatar.Image
             source={{ uri: this.state.userDetails.profilePictureUrl }}
             size={24}
@@ -49,26 +61,16 @@ class Comment extends React.Component {
                 })
               }>
               <Text
-                style={{
-                  fontSize: 10,
-                  color: colors.text,
-                }}>
+                style={styles.username}>
                 {this.state.userDetails.username}
               </Text>
               <Text
-                style={{
-                  fontSize: 10,
-                  color: colors.placeholder,
-                }}>
+                style={styles.placeholder}>
                 {this.props.Item.email}
               </Text>
             </TouchableOpacity>
             <Text
-              style={{
-                color: colors.text,
-                fontSize: 14,
-                marginTop: 4,
-              }}>
+              style={styles.text}>
               {this.props.Item.text}
             </Text>
           </View>

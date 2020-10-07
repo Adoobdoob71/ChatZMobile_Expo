@@ -7,6 +7,7 @@ import {
   Image,
   ActivityIndicator,
   InteractionManager,
+  StyleSheet,
 } from "react-native";
 import { withTheme, Card, Avatar } from "react-native-paper";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -47,6 +48,30 @@ class PostScreen extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
+    const styles = StyleSheet.create({
+      imageCover: {
+        aspectRatio: this.state.ratio,
+        width: "100%",
+        height: undefined,
+      },
+      bodyView: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+        alignItems: "center",
+        padding: 12,
+      },
+      emptyFlatList: {
+        width: "100%",
+        height: 300,
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      emptyFlatListText: {
+        color: this.props.theme.colors.placeholder,
+        fontSize: 16,
+      },
+    });
     const LeftContent = () => (
       <Avatar.Image source={{ uri: this.Item.groupImage }} size={42} />
     );
@@ -72,20 +97,9 @@ class PostScreen extends React.Component {
                 />
                 <Card.Cover
                   source={{ uri: this.Item.imageUrl }}
-                  style={{
-                    aspectRatio: this.state.ratio,
-                    width: "100%",
-                    height: undefined,
-                  }}
+                  style={styles.imageCover}
                 />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "100%",
-                    alignItems: "center",
-                    padding: 12,
-                  }}>
+                <View style={styles.bodyView}>
                   <Text style={{ fontSize: 12, color: colors.text }}>
                     {this.Item.body}
                   </Text>
@@ -93,24 +107,14 @@ class PostScreen extends React.Component {
               </View>
             )}
             ListEmptyComponent={() => (
-              <View
-                style={{
-                  width: "100%",
-                  height: 300,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}>
+              <View style={styles.emptyFlatList}>
                 <MaterialIcons
                   name="sentiment-dissatisfied"
                   color={this.props.theme.colors.placeholder}
                   size={40}
                   style={{ marginBottom: 16 }}
                 />
-                <Text
-                  style={{
-                    color: this.props.theme.colors.placeholder,
-                    fontSize: 16,
-                  }}>
+                <Text style={styles.emptyFlatListText}>
                   Seems pretty empty here...
                 </Text>
               </View>

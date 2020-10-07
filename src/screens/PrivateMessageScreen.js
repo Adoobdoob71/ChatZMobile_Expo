@@ -10,6 +10,7 @@ import {
   Alert,
   RefreshControl,
   Dimensions,
+  StyleSheet,
 } from "react-native";
 import * as firebase from "firebase";
 import { IconButton, ProgressBar, withTheme } from "react-native-paper";
@@ -120,24 +121,37 @@ class PrivateMessageScreen extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
+    const styles = StyleSheet.create({
+      backButton: {
+        height: 56,
+        flexDirection: "row",
+        paddingHorizontal: 8,
+        alignItems: "center",
+        backgroundColor: colors.header,
+        elevation: 4,
+      },
+      username: { color: colors.text, fontSize: 18, marginStart: 12 },
+      textBox: {
+        flexDirection: "column",
+        padding: 4,
+        backgroundColor: colors.header,
+      },
+      textInput: { flex: 1, alignSelf: "center", color: colors.text },
+      imageBackground: {
+        height: 150,
+        width: "100%",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+      },
+    });
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <View
-          style={{
-            height: 56,
-            flexDirection: "row",
-            paddingHorizontal: 8,
-            alignItems: "center",
-            backgroundColor: colors.header,
-            elevation: 4,
-          }}>
+        <View style={styles.backButton}>
           <BackButton
             imageUrl={this.Item.profilePictureUrl}
             navigation={this.props.navigation}
           />
-          <Text style={{ color: colors.text, fontSize: 18, marginStart: 12 }}>
-            {this.Item.username}
-          </Text>
+          <Text style={styles.username}>{this.Item.username}</Text>
         </View>
         <FlatList
           data={this.state.data}
@@ -147,16 +161,15 @@ class PrivateMessageScreen extends React.Component {
           }
           style={{ flex: 1 }}
           renderItem={({ item }) => (
-            <ChatMessage Item={item} navigation={this.props.navigation} />
+            <ChatMessage
+              Item={item}
+              navigation={this.props.navigation}
+              type="private"
+              furtherData={this.Item}
+            />
           )}
         />
-        <View
-          style={{
-            flexDirection: "column",
-            padding: 4,
-            backgroundColor: colors.header,
-          }}
-          ref={(ref) => (this.view = ref)}>
+        <View style={styles.textBox} ref={(ref) => (this.view = ref)}>
           {this.state.submitting && (
             <ProgressBar
               progress={this.state.progress}
@@ -167,12 +180,7 @@ class PrivateMessageScreen extends React.Component {
           {this.state.image != null && (
             <ImageBackground
               source={{ uri: this.state.image.uri }}
-              style={{
-                height: 150,
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "flex-end",
-              }}>
+              style={styles.imageBackground}>
               <IconButton
                 icon="close"
                 onPress={() => this.setState({ image: null })}
@@ -200,7 +208,7 @@ class PrivateMessageScreen extends React.Component {
               onChangeText={(value) => this.setState({ messageText: value })}
               placeholder="Say something nice"
               editable={this.state.submitting == false}
-              style={{ flex: 1, alignSelf: "center", color: colors.text }}
+              style={styles.textInput}
               multiline={true}
             />
             <IconButton

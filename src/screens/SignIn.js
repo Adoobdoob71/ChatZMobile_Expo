@@ -1,6 +1,11 @@
 import * as React from "react";
-import { SafeAreaView, View, InteractionManager } from "react-native";
-import { TextInput, Button, HelperText } from "react-native-paper";
+import {
+  SafeAreaView,
+  View,
+  InteractionManager,
+  TextInput,
+} from "react-native";
+import { Button, HelperText, Snackbar, withTheme } from "react-native-paper";
 import * as firebase from "firebase";
 
 class SignIn extends React.Component {
@@ -27,55 +32,70 @@ class SignIn extends React.Component {
   };
 
   render() {
+    const colors = this.props.theme.colors;
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ margin: 64 }}>
-          <TextInput
-            value={this.state.email}
-            onChangeText={(value) =>
-              this.setState({ email: value, error: null })
+      <>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ margin: 32 }}>
+            <TextInput
+              value={this.state.email}
+              onChangeText={(value) => this.setState({ email: value })}
+              textContentType="emailAddress"
+              placeholder="Email"
+              placeholderTextColor={colors.placeholder}
+              style={{
+                borderRadius: 8,
+                borderWidth: 1,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderColor: colors.primary,
+                color: colors.text,
+                marginVertical: 12,
+              }}
+            />
+            <TextInput
+              value={this.state.password}
+              onChangeText={(value) => this.setState({ password: value })}
+              textContentType="password"
+              placeholder="Password"
+              placeholderTextColor={colors.placeholder}
+              style={{
+                borderRadius: 8,
+                borderWidth: 1,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderColor: colors.primary,
+                color: colors.text,
+                marginVertical: 12,
+              }}
+            />
+          </View>
+          <Button
+            icon="check"
+            mode="contained"
+            loading={this.state.loading}
+            onPress={() =>
+              InteractionManager.runAfterInteractions(() => {
+                this.SignInFunc();
+              })
             }
-            textContentType="emailAddress"
             disabled={this.state.loading}
-            error={this.state.error}
-            label="Email"
-          />
-          {this.state.error != null && (
-            <HelperText type="error">{this.state.error.message}</HelperText>
-          )}
-        </View>
-        <View style={{ marginHorizontal: 64 }}>
-          <TextInput
-            value={this.state.password}
-            onChangeText={(value) =>
-              this.setState({ password: value, error: null })
-            }
-            textContentType="password"
-            error={this.state.error}
-            disabled={this.state.loading}
-            label="Password"
-          />
-          {this.state.error != null && (
-            <HelperText type="error">{this.state.error.message}</HelperText>
-          )}
-        </View>
-        <Button
-          icon="check"
-          mode="contained"
-          loading={this.state.loading}
-          onPress={() =>
-            InteractionManager.runAfterInteractions(() => {
-              this.SignInFunc();
-            })
-          }
-          disabled={this.state.loading}
-          style={{ marginHorizontal: 64, marginTop: 64 }}
-        >
-          Sign In
-        </Button>
-      </SafeAreaView>
+            style={{ marginHorizontal: 64, marginTop: 64 }}>
+            Sign In
+          </Button>
+        </SafeAreaView>
+        <Snackbar
+          visible={this.state.error}
+          onDismiss={() => this.setState({ error: null })}
+          action={{
+            label: "DISMISS",
+            onPress: () => this.setState({ error: null }),
+          }}>
+          {this.state.error ? this.state.error.message : ""}
+        </Snackbar>
+      </>
     );
   }
 }
 
-export default SignIn;
+export default withTheme(SignIn);

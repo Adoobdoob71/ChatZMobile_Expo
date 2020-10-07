@@ -9,6 +9,7 @@ import {
   ImageBackground,
   InteractionManager,
   RefreshControl,
+  StyleSheet,
 } from "react-native";
 import * as firebase from "firebase";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -123,36 +124,50 @@ class ChatScreen extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
+    const styles = StyleSheet.create({
+      header: {
+        height: 56,
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        elevation: 4,
+        backgroundColor: colors.header,
+      },
+      headerTitle: {
+        fontSize: 16,
+        color: colors.text,
+      },
+      headerTitleName: {
+        fontSize: 10,
+        color: colors.placeholder,
+      },
+      textBox: {
+        flexDirection: "column",
+        padding: 4,
+        backgroundColor: colors.header,
+      },
+      imageBackground: {
+        height: 150,
+        width: "100%",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+      },
+      textInput: {
+        flex: 1,
+        alignSelf: "center",
+        color: colors.text,
+      },
+    });
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <View
-          style={{
-            height: 56,
-            paddingHorizontal: 12,
-            flexDirection: "row",
-            alignItems: "center",
-            elevation: 4,
-            backgroundColor: colors.header,
-          }}>
+        <View style={styles.header}>
           <BackButton
             imageUrl={this.Item.imageUrl}
             navigation={this.props.navigation}
           />
           <View style={{ marginLeft: 16 }}>
-            <Text
-              style={{
-                fontSize: 16,
-                color: colors.text,
-              }}>
-              Chat Room
-            </Text>
-            <Text
-              style={{
-                fontSize: 10,
-                color: colors.placeholder,
-              }}>
-              {this.Item.key}
-            </Text>
+            <Text style={styles.headerTitle}>Chat Room</Text>
+            <Text style={styles.headerTitleName}>{this.Item.key}</Text>
           </View>
           <IconButton
             icon="chevron-down"
@@ -173,15 +188,15 @@ class ChatScreen extends React.Component {
             this.FlatList.scrollToEnd({ animated: true })
           }
           renderItem={({ item }) => (
-            <ChatMessage Item={item} navigation={this.props.navigation} />
+            <ChatMessage
+              Item={item}
+              navigation={this.props.navigation}
+              type="group"
+              furtherData={this.Item}
+            />
           )}
         />
-        <View
-          style={{
-            flexDirection: "column",
-            padding: 4,
-            backgroundColor: colors.header,
-          }}>
+        <View style={styles.textBox}>
           {this.state.submitting && (
             <ProgressBar
               progress={this.state.progress}
@@ -192,12 +207,7 @@ class ChatScreen extends React.Component {
           {this.state.image != null && (
             <ImageBackground
               source={{ uri: this.state.image.uri }}
-              style={{
-                height: 150,
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "flex-end",
-              }}>
+              style={styles.imageBackground}>
               <IconButton
                 icon="close"
                 onPress={() => this.setState({ image: null })}
@@ -225,7 +235,7 @@ class ChatScreen extends React.Component {
               onChangeText={(value) => this.setState({ messageText: value })}
               placeholder="Say something nice"
               editable={this.state.submitting == false}
-              style={{ flex: 1, alignSelf: "center", color: colors.text }}
+              style={styles.textInput}
               multiline={true}
             />
             <IconButton

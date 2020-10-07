@@ -14,6 +14,8 @@ import DrawerNavigator from "./DrawerNavigator";
 import Settings from "../screens/Settings";
 import Profile from "../screens/Profile";
 import EditProfile from "../screens/EditProfile";
+import Register from "../screens/Register";
+import ImageScreen from "../screens/ImageScreen";
 
 const Stack = createStackNavigator();
 
@@ -28,15 +30,31 @@ function StackNavigator(props) {
         name="DrawerNavigator"
         options={{ headerShown: false }}
       />
-      <Stack.Screen component={PostScreen} name="PostScreen" />
-      <Stack.Screen component={GroupScreen} name="GroupScreen" />
+      <Stack.Screen
+        component={PostScreen}
+        name="PostScreen"
+        options={{ headerTitle: "Post" }}
+      />
+      <Stack.Screen
+        component={GroupScreen}
+        name="GroupScreen"
+        options={{ headerTitle: "Group" }}
+      />
       <Stack.Screen
         component={ChatScreen}
         name="ChatScreen"
         options={{ headerShown: false }}
       />
-      <Stack.Screen component={SignIn} name="SignIn" />
-      <Stack.Screen component={AddPost} name="AddPost" />
+      <Stack.Screen
+        component={SignIn}
+        name="SignIn"
+        options={{ headerTitle: "Sign In" }}
+      />
+      <Stack.Screen
+        component={AddPost}
+        name="AddPost"
+        options={{ headerTitle: "Add Post" }}
+      />
       <Stack.Screen
         component={MyProfile}
         name="MyProfile"
@@ -69,6 +87,12 @@ function StackNavigator(props) {
         name="EditProfile"
         options={{ headerTitle: "Edit Profile" }}
       />
+      <Stack.Screen
+        component={ImageScreen}
+        name="ImageScreen"
+        options={{ headerTitle: "", headerTransparent: true }}
+      />
+      {/* <Stack.Screen component={Register} name="Register" /> */}
     </Stack.Navigator>
   );
 }

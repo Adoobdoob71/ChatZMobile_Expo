@@ -10,6 +10,10 @@
       "versionCode": 1,
       "useNextNotificationsApi": true
     },
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "description": "",
+    "githubUrl": "https://github.com/Adoobdoob71/ChatZMobile_Expo"
   }
 }

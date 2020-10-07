@@ -58,8 +58,7 @@ class DrawerContent extends React.Component {
         dbTwo
           .on("value", (snapshot) =>
             this.setState({ userFurtherDetails: snapshot.val() })
-          )
-          .then(() => dbTwo.off());
+          );
       }
     });
   }

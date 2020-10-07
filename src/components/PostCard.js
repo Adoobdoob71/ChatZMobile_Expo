@@ -84,14 +84,21 @@ class PostCard extends React.Component {
             left={LeftContent}
             right={RightContent}
           />
-          <Card.Cover
-            source={{ uri: this.Item.imageUrl }}
-            style={{
-              aspectRatio: this.state.ratio,
-              width: "100%",
-              height: undefined,
-            }}
-          />
+          <TouchableOpacity
+            onPress={() =>
+              this.props.navigation.navigate("ImageScreen", {
+                imageUrl: this.Item.imageUrl,
+              })
+            }>
+            <Card.Cover
+              source={{ uri: this.Item.imageUrl }}
+              style={{
+                aspectRatio: this.state.ratio,
+                width: "100%",
+                height: undefined,
+              }}
+            />
+          </TouchableOpacity>
           <View
             style={{
               flexDirection: "row",

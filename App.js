@@ -6,6 +6,7 @@ import { Provider, DefaultTheme, DarkTheme, Colors } from "react-native-paper";
 import * as firebase from "firebase";
 import { StatusBar } from "expo-status-bar";
 import { store } from "./src/redux/ThemeState";
+import { AsyncStorage } from "react-native";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBy8QvALSQgp6OIuGsQhInsvbV5uElLHTc",
@@ -56,6 +57,9 @@ export default function App() {
     store.subscribe(() =>
       store.getState() === "dark" ? setTheme(Dark_Theme) : setTheme(Light_Theme)
     );
+    AsyncStorage.getItem("dark").then((result) => {
+      store.dispatch({ type: result });
+    });
   }, []);
 
   return (
