@@ -19,7 +19,7 @@ class DrawerContent extends React.Component {
       user: null,
       userFurtherDetails: {
         username: "",
-        profilePictureUrl: null,
+        profilePictureUrl: "null",
         description: "",
       },
     };
@@ -55,10 +55,9 @@ class DrawerContent extends React.Component {
           }
         });
         let dbTwo = firebase.database().ref("users").child(user.uid);
-        dbTwo
-          .on("value", (snapshot) =>
-            this.setState({ userFurtherDetails: snapshot.val() })
-          );
+        dbTwo.on("value", (snapshot) =>
+          this.setState({ userFurtherDetails: snapshot.val() })
+        );
       }
     });
   }

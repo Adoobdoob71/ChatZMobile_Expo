@@ -4,11 +4,12 @@ import {
   IconButton,
   ProgressBar,
   Button,
-  SnackBar,
+  Snackbar,
   withTheme,
 } from "react-native-paper";
 import * as firebase from "firebase";
 import * as ImagePicker from "expo-image-picker";
+import { ScrollView } from "react-native-gesture-handler";
 
 class Register extends React.Component {
   constructor(props) {
@@ -87,12 +88,13 @@ class Register extends React.Component {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
+        marginBottom: 24,
       },
       image: {
-        width: 72,
-        height: 72,
-        borderRadius: 36,
-        backgroundColor: colors.backdp,
+        width: 84,
+        height: 84,
+        borderRadius: 42,
+        backgroundColor: colors.card,
         marginRight: 12,
       },
       textInputView: {
@@ -103,13 +105,15 @@ class Register extends React.Component {
         borderRadius: 8,
         borderWidth: 1,
         borderColor: colors.primary,
-        padding: 12,
+        color: colors.text,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
         marginVertical: 12,
       },
     });
     return (
       <>
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
           {this.state.loading && (
             <ProgressBar
               progress={this.state.progress}
@@ -118,59 +122,65 @@ class Register extends React.Component {
               color={colors.primary}
             />
           )}
-          <View style={styles.imageView}>
-            <Image
-              source={this.state.image.uri && { uri: this.state.image.uri }}
-              style={styles.image}
-            />
-            <IconButton
-              icon="camera"
+          <ScrollView
+            style={{ flex: 1, paddingHorizontal: 32, paddingVertical: 48 }}>
+            <View style={styles.imageView}>
+              <Image
+                source={this.state.image.uri && { uri: this.state.image.uri }}
+                style={styles.image}
+              />
+              <IconButton
+                icon="camera"
+                color={colors.primary}
+                onPress={() => this.pickImage()}
+              />
+            </View>
+            <View>
+              <TextInput
+                value={this.state.email}
+                onChangeText={(value) => this.setState({ email: value })}
+                placeholder="Email"
+                placeholderTextColor={colors.placeholder}
+                style={styles.textInput}
+                textContentType="emailAddress"
+              />
+              <TextInput
+                value={this.state.username}
+                onChangeText={(value) => this.setState({ username: value })}
+                placeholder="Username"
+                placeholderTextColor={colors.placeholder}
+                style={styles.textInput}
+              />
+              <TextInput
+                value={this.state.password}
+                onChangeText={(value) => this.setState({ password: value })}
+                placeholder="Password"
+                secureTextEntry={true}
+                placeholderTextColor={colors.placeholder}
+                style={[styles.textInput, { marginBottom: 24 }]}
+              />
+            </View>
+            <Button
               color={colors.primary}
-              onPress={() => this.pickimage()}
-            />
-          </View>
-          <View>
-            <TextInput
-              value={this.state.email}
-              onChangeText={(value) => this.setState({ email: value })}
-              placeholder="Email"
-              placeholderTextColor={colors.placeholder}
-              style={styles.textInput}
-            />
-            <TextInput
-              value={this.state.username}
-              onChangeText={(value) => this.setState({ username: value })}
-              placeholder="Username"
-              placeholderTextColor={colors.placeholder}
-              style={styles.textInput}
-            />
-            <TextInput
-              value={this.state.password}
-              onChangeText={(value) => this.setState({ password: value })}
-              placeholder="Password"
-              placeholderTextColor={colors.placeholder}
-              style={styles.textInput}
-            />
-          </View>
-          <Button
-            color={colors.primary}
-            mode="outlined"
-            style={{ alignSelf: "flex-end" }}
-            onPress={() => this.register()}
-            loading={this.state.loading}
-            disabled={this.state.loading}>
-            Submit
-          </Button>
+              mode="contained"
+              icon="chevron-right"
+              style={{ alignSelf: "flex-end" }}
+              onPress={() => this.register()}
+              loading={this.state.loading}
+              disabled={this.state.loading}>
+              Submit
+            </Button>
+          </ScrollView>
         </SafeAreaView>
-        <SnackBar
+        <Snackbar
           visible={this.state.error}
-          onDismiss={() => this.setState({ error: null })}
+          onDismiss={() => this.setState({ error: null, loading: false })}
           action={{
             label: "DISMISS",
-            onPress: () => this.setState({ error: null }),
+            onPress: () => this.setState({ error: null, loading: false }),
           }}>
           {this.state.error ? this.state.error.message : ""}
-        </SnackBar>
+        </Snackbar>
       </>
     );
   }

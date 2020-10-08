@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   InteractionManager,
   RefreshControl,
+  StyleSheet,
 } from "react-native";
 import PostCard from "../components/PostCard";
 import * as firebase from "firebase";
@@ -44,6 +45,14 @@ class Home extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
+    const styles = StyleSheet.create({
+      fab: {
+        backgroundColor: colors.background,
+        bottom: 16,
+        right: 16,
+        position: "absolute",
+      },
+    });
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <FlatList
@@ -62,18 +71,18 @@ class Home extends React.Component {
             <PostCard Item={item} navigation={this.props.navigation} />
           )}
         />
-        <FAB.Group
+        {/* <FAB.Group
           open={this.state.fabOpen}
           small
           fabStyle={{ backgroundColor: colors.background }}
           color={colors.primary}
           icon={this.state.fabOpen ? "close" : "plus"}
           actions={[
-            {
-              icon: "plus",
-              label: "Add Post",
-              onPress: () => this.props.navigation.navigate("AddPost"),
-            },
+            // {
+            //   icon: "plus",
+            //   label: "Add Post",
+            //   onPress: () => this.props.navigation.navigate("AddPost"),
+            // },
             {
               icon: "chevron-up",
               label: "Scroll Up",
@@ -84,6 +93,16 @@ class Home extends React.Component {
           onStateChange={() =>
             InteractionManager.runAfterInteractions(() =>
               this.setState({ fabOpen: !this.state.fabOpen })
+            )
+          }
+        /> */}
+        <FAB
+          icon="chevron-up"
+          style={styles.fab}
+          color={colors.primary}
+          onPress={() =>
+            InteractionManager.runAfterInteractions(() =>
+              this.flatList.scrollToOffset({ offset: 0, animated: true })
             )
           }
         />

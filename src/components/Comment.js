@@ -35,19 +35,22 @@ class Comment extends React.Component {
         fontSize: 14,
         marginTop: 4,
       },
+      username: {
+        color: colors.text,
+        fontSize: 12,
+      },
       placeholder: {
         fontSize: 10,
         color: colors.placeholder,
-      }
-    })
+      },
+    });
     if (this.state.userDetails == null) return null;
     else
       return (
-        <View
-          style={styles.body}>
+        <View style={styles.body}>
           <Avatar.Image
             source={{ uri: this.state.userDetails.profilePictureUrl }}
-            size={24}
+            size={28}
           />
           <View
             style={{
@@ -60,19 +63,12 @@ class Comment extends React.Component {
                   userUID: this.props.Item.userUID,
                 })
               }>
-              <Text
-                style={styles.username}>
+              <Text style={styles.username}>
                 {this.state.userDetails.username}
               </Text>
-              <Text
-                style={styles.placeholder}>
-                {this.props.Item.email}
-              </Text>
+              <Text style={styles.placeholder}>{this.props.Item.email}</Text>
             </TouchableOpacity>
-            <Text
-              style={styles.text}>
-              {this.props.Item.text}
-            </Text>
+            <Text style={styles.text}>{this.props.Item.text}</Text>
           </View>
         </View>
       );

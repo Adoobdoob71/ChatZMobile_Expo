@@ -92,7 +92,7 @@ function StackNavigator(props) {
         name="ImageScreen"
         options={{ headerTitle: "", headerTransparent: true }}
       />
-      {/* <Stack.Screen component={Register} name="Register" /> */}
+      <Stack.Screen component={Register} name="Register" />
     </Stack.Navigator>
   );
 }

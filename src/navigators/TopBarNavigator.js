@@ -103,14 +103,19 @@ function TopBarNavigator(props) {
             title="Register"
             onPress={() => {
               setMenuVisible(false);
-              // props.navigation.navigate("Register");
+              props.navigation.navigate("Register");
             }}
           />
         </Menu>
       </View>
       <Tab.Navigator
         initialRouteName="Home"
-        tabBarOptions={{ style: { backgroundColor: colors.header } }}
+        tabBarOptions={{
+          style: { backgroundColor: colors.header },
+          activeTintColor: colors.primary,
+          labelStyle: { fontWeight: "bold" },
+          inactiveTintColor: colors.placeholder,
+        }}
         style={{ flex: 1, elevation: 4 }}>
         <Tab.Screen component={Home} name="Home" />
         <Tab.Screen component={Groups} name="Groups" />

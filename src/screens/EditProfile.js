@@ -90,10 +90,11 @@ class EditProfile extends React.Component {
               style={{
                 width: 64,
                 height: 64,
-                marginTop: 6,
+                marginTop: 4,
                 justifyContent: "center",
                 alignItems: "center",
               }}
+              imageStyle={{ borderRadius: 8 }}
               source={{ uri: this.state.userDetails.profilePictureUrl }}>
               <IconButton
                 icon="camera"
@@ -169,7 +170,7 @@ class EditProfile extends React.Component {
           </View>
         </SafeAreaView>
       );
-    else return null;
+    else return <View style={{ flex: 1 }}></View>;
   }
 }
 

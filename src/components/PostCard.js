@@ -77,7 +77,7 @@ class PostCard extends React.Component {
     if (this.state.ratio == 0 || this.state.loading) return null;
     else
       return (
-        <Card style={{ marginVertical: 4 }}>
+        <Card style={{ marginVertical: 4, borderRadius: 0, elevation: 0 }}>
           <Card.Title
             title={this.Item.title}
             subtitle={this.Item.groupName}

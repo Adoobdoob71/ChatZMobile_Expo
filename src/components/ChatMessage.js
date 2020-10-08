@@ -156,11 +156,13 @@ class ChatMessage extends React.Component {
         }
         visible={this.state.menuVisible}
         onDismiss={() => this.setState({ menuVisible: false })}>
-        <Menu.Item
-          title="Edit Message"
-          icon="pencil"
-          onPress={() => this.setState({ menuVisible: false, editing: true })}
-        />
+        {firebase.auth().currentUser.uid === this.Item.userUID && (
+          <Menu.Item
+            title="Edit Message"
+            icon="pencil"
+            onPress={() => this.setState({ menuVisible: false, editing: true })}
+          />
+        )}
         <Menu.Item
           title="Remove Message"
           icon="close"
