@@ -106,6 +106,14 @@ function TopBarNavigator(props) {
               props.navigation.navigate("Register");
             }}
           />
+          <Menu.Item
+            title="Sign Out"
+            disabled={!authenticated}
+            onPress={() => {
+              setMenuVisible(false);
+              firebase.auth().signOut();
+            }}
+          />
         </Menu>
       </View>
       <Tab.Navigator

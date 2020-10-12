@@ -96,6 +96,7 @@ class DrawerContent extends React.Component {
               </View>
             </View>
           </TouchableOpacity>
+
           <SectionList
             sections={[{ title: "Contacts", data: this.state.data }]}
             style={{ flex: 1 }}
@@ -116,25 +117,47 @@ class DrawerContent extends React.Component {
               <DrawerContact Item={item} navigation={this.props.navigation} />
             )}
           />
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-            }}>
-            <IconButton
-              icon="settings"
-              color={colors.text}
-              onPress={() => this.props.navigation.navigate("Settings")}
-            />
-            <Text
+          <View>
+            <View
               style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                color: colors.text,
-                marginStart: 8,
+                flexDirection: "row",
+                alignItems: "center",
               }}>
-              Settings
-            </Text>
+              <IconButton
+                icon="bookmark"
+                color={colors.text}
+                onPress={() => this.props.navigation.navigate("Bookmarks")}
+              />
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: colors.text,
+                  marginStart: 8,
+                }}>
+                Bookmarks
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}>
+              <IconButton
+                icon="settings"
+                color={colors.text}
+                onPress={() => this.props.navigation.navigate("Settings")}
+              />
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: colors.text,
+                  marginStart: 8,
+                }}>
+                Settings
+              </Text>
+            </View>
           </View>
         </SafeAreaView>
       );

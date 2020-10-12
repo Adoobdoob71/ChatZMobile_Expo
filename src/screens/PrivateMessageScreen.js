@@ -17,6 +17,7 @@ import { IconButton, ProgressBar, withTheme } from "react-native-paper";
 import BackButton from "../components/BackButton";
 import ChatMessage from "../components/ChatMessage";
 import * as ImagePicker from "expo-image-picker";
+import * as Notifications from 'expo-notifications';
 
 class PrivateMessageScreen extends React.Component {
   constructor(props) {

@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   InteractionManager,
+  Animated,
 } from "react-native";
 import {
   Avatar,
@@ -22,29 +23,46 @@ class PostCard extends React.Component {
     super(props);
     this.state = {
       user: { profilePictureUrl: "empty", username: "" },
-      bookmarked: false,
+      bookmarked: null,
       ratio: 0,
       loading: true,
       groupData: null,
+      // fadeValue: new Animated.Value(0),
+      // spring: new Animated.Value(1),
     };
     this.Item = this.props.Item;
   }
 
   componentDidMount() {
-    this.db = firebase.database().ref("users").child(this.Item.userUID);
-    this.db.once("value", (snapshot) => {
+    this.db = firebase.database().ref("users");
+    this.db.child(this.Item.userUID).once("value", (snapshot) => {
       this.setState({ user: snapshot.val() });
     });
     Image.getSize(this.Item.imageUrl, (width, height) => {
       this.setState({ ratio: width / height });
     });
-    this.db = firebase.database().ref("groups").child(this.Item.groupName);
-    this.db
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        firebase
+          .database()
+          .ref("users")
+          .child(user.uid)
+          .child("bookmarks")
+          .child(this.Item.key)
+          .on("value", (snapshot) => {
+            if (snapshot.exists())
+              this.setState({ bookmarked: snapshot.val().bookmarked });
+            else this.setState({ bookmarked: false });
+          });
+      } else this.setState({ bookmarked: null });
+    });
+    this.dbTwo = firebase.database().ref("groups").child(this.Item.groupName);
+    this.dbTwo
       .once("value", (snapshot) => {
         this.setState({ groupData: { ...snapshot.val(), key: snapshot.key } });
       })
       .then(() => {
-        this.db.off();
+        this.dbTwo.off();
         this.setState({ loading: false });
       });
   }
@@ -52,6 +70,42 @@ class PostCard extends React.Component {
   componentWillUnmount() {
     this.db.off();
   }
+
+  bookmarkPost = () => {
+    this.setState({ loading: true });
+    this.db
+      .child(firebase.auth().currentUser.uid)
+      .child("bookmarks")
+      .child(this.Item.key)
+      .update({
+        bookmarked: !this.state.bookmarked,
+        key: this.Item.key,
+      });
+    this.setState({ loading: false });
+  };
+
+  // fade = () => {
+  //   Animated.timing(this.state.fadeValue, {
+  //     duration: 1000,
+  //     toValue: 1,
+  //     useNativeDriver: true,
+  //   }).start();
+  // };
+
+  // spring = () => {
+  //   Animated.sequence([
+  //     Animated.timing(this.state.spring, {
+  //       toValue: 1.1,
+  //       duration: 100,
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.timing(this.state.spring, {
+  //       toValue: 1,
+  //       duration: 100,
+  //       useNativeDriver: true,
+  //     }),
+  //   ]).start();
+  // };
 
   render() {
     const colors = this.props.theme.colors;
@@ -71,7 +125,12 @@ class PostCard extends React.Component {
       <IconButton
         icon={this.state.bookmarked ? "bookmark" : "bookmark-outline"}
         color={colors.primary}
-        onPress={() => this.setState({ bookmarked: !this.state.bookmarked })}
+        disabled={this.state.bookmarked === null || this.state.loading}
+        onPress={
+          () => this.bookmarkPost()
+          // this.fade();
+          // this.spring();
+        }
       />
     );
     if (this.state.ratio == 0 || this.state.loading) return null;
@@ -119,6 +178,16 @@ class PostCard extends React.Component {
                   source={{ uri: this.state.user.profilePictureUrl }}
                   style={{ height: 24, width: 24, borderRadius: 12 }}
                 />
+                {/* <Animated.Text
+                  style={{
+                    fontSize: 10,
+                    color: colors.placeholder,
+                    marginLeft: 8,
+                    // opacity: this.state.fadeValue,
+                    transform: [{ scale: this.state.spring }],
+                  }}>
+                  Posted by {this.state.user.username}
+                </Animated.Text> */}
                 <Text
                   style={{
                     fontSize: 10,

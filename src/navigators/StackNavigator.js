@@ -16,6 +16,7 @@ import Profile from "../screens/Profile";
 import EditProfile from "../screens/EditProfile";
 import Register from "../screens/Register";
 import ImageScreen from "../screens/ImageScreen";
+import Bookmarks from "../screens/Bookmarks";
 
 const Stack = createStackNavigator();
 
@@ -93,6 +94,7 @@ function StackNavigator(props) {
         options={{ headerTitle: "", headerTransparent: true }}
       />
       <Stack.Screen component={Register} name="Register" />
+      <Stack.Screen component={Bookmarks} name="Bookmarks" />
     </Stack.Navigator>
   );
 }
