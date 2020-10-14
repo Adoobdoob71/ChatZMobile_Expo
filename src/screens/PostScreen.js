@@ -9,7 +9,7 @@ import {
   InteractionManager,
   StyleSheet,
 } from "react-native";
-import { withTheme, Card, Avatar } from "react-native-paper";
+import { withTheme, Card, Avatar, IconButton } from "react-native-paper";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Comment from "../components/Comment";
 import * as firebase from "firebase";
@@ -48,6 +48,17 @@ class PostScreen extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
+    this.props.navigation.setOptions({
+      headerRight: () => (
+        <IconButton
+          icon="chevron-right"
+          color={colors.text}
+          onPress={() =>
+            this.props.navigation.navigate("AddComment", { Item: this.Item })
+          }
+        />
+      ),
+    });
     const styles = StyleSheet.create({
       imageCover: {
         aspectRatio: this.state.ratio,
@@ -89,7 +100,7 @@ class PostScreen extends React.Component {
             data={this.state.data}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={() => (
-              <View style={{ backgroundColor: colors.card }}>
+              <View style={{ backgroundColor: colors.card, marginBottom: 4 }}>
                 <Card.Title
                   title={this.Item.title}
                   subtitle={this.Item.groupName}

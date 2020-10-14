@@ -15,6 +15,7 @@ import {
   Button,
   Card,
   withTheme,
+  Menu,
 } from "react-native-paper";
 import * as firebase from "firebase";
 
@@ -27,6 +28,7 @@ class PostCard extends React.Component {
       ratio: 0,
       loading: true,
       groupData: null,
+      liked: false,
       // fadeValue: new Animated.Value(0),
       // spring: new Animated.Value(1),
     };
@@ -122,16 +124,49 @@ class PostCard extends React.Component {
       </TouchableOpacity>
     );
     const RightContent = () => (
-      <IconButton
-        icon={this.state.bookmarked ? "bookmark" : "bookmark-outline"}
-        color={colors.primary}
-        disabled={this.state.bookmarked === null || this.state.loading}
-        onPress={
-          () => this.bookmarkPost()
-          // this.fade();
-          // this.spring();
-        }
-      />
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {/* <IconButton
+          icon={this.state.liked ? "heart" : "heart-outline"}
+          color={colors.primary}
+          onPress={() => this.setState({ liked: !this.state.liked })}
+        />
+        <IconButton
+          icon={this.state.bookmarked ? "bookmark" : "bookmark-outline"}
+          color={colors.primary}
+          disabled={this.state.bookmarked === null || this.state.loading}
+          onPress={
+            () => this.bookmarkPost()
+            // this.fade();
+            // this.spring();
+          }
+        /> */}
+        <Menu
+          visible={this.state.menuVisible}
+          anchor={
+            <IconButton
+              icon="dots-vertical"
+              color={colors.text}
+              onPress={() => this.setState({ menuVisible: true })}
+            />
+          }
+          onDismiss={() => this.setState({ menuVisible: false })}>
+          <Menu.Item
+            title="Favorite"
+            icon={this.state.liked ? "heart" : "heart-outline"}
+            onPress={() =>
+              this.setState({ liked: !this.state.liked, menuVisible: false })
+            }
+          />
+          <Menu.Item
+            title="Bookmark"
+            icon={this.state.bookmarked ? "bookmark" : "bookmark-outline"}
+            onPress={() => {
+              this.bookmarkPost();
+              this.setState({ menuVisible: false });
+            }}
+          />
+        </Menu>
+      </View>
     );
     if (this.state.ratio == 0 || this.state.loading) return null;
     else

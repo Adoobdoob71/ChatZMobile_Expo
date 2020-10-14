@@ -65,7 +65,7 @@ class DrawerContent extends React.Component {
     const colors = this.props.theme.colors;
     if (this.state.user != null)
       return (
-        <SafeAreaView style={{ flex: 1, padding: 12 }}>
+        <SafeAreaView style={{ flex: 1, padding: 12, paddingBottom: 6 }}>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate("MyProfile")}
             style={{ marginBottom: 24 }}>
@@ -99,7 +99,7 @@ class DrawerContent extends React.Component {
 
           <SectionList
             sections={[{ title: "Contacts", data: this.state.data }]}
-            style={{ flex: 1 }}
+            style={{ flex: 1, marginBottom: 4 }}
             showsVerticalScrollIndicator={false}
             overScrollMode="never"
             renderSectionHeader={({ section: { title } }) => (

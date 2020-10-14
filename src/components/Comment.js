@@ -24,8 +24,7 @@ class Comment extends React.Component {
       body: {
         padding: 12,
         flex: 1,
-        marginVertical: 8,
-        marginHorizontal: 8,
+        margin: 4,
         flexDirection: "row",
         backgroundColor: colors.card,
         borderRadius: 4,

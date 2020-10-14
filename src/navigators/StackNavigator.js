@@ -17,6 +17,7 @@ import EditProfile from "../screens/EditProfile";
 import Register from "../screens/Register";
 import ImageScreen from "../screens/ImageScreen";
 import Bookmarks from "../screens/Bookmarks";
+import AddComment from "../screens/AddComment";
 
 const Stack = createStackNavigator();
 
@@ -95,6 +96,11 @@ function StackNavigator(props) {
       />
       <Stack.Screen component={Register} name="Register" />
       <Stack.Screen component={Bookmarks} name="Bookmarks" />
+      <Stack.Screen
+        component={AddComment}
+        name="AddComment"
+        options={{ headerTitle: "Add a comment" }}
+      />
     </Stack.Navigator>
   );
 }
