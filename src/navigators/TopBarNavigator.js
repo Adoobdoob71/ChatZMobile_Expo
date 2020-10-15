@@ -94,6 +94,7 @@ function TopBarNavigator(props) {
           />
           <Menu.Item
             title="Sign In"
+            disabled={firebase.auth().currentUser != null}
             onPress={() => {
               setMenuVisible(false);
               props.navigation.navigate("SignIn");
