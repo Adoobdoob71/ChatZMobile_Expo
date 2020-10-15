@@ -111,6 +111,14 @@ function TopBarNavigator(props) {
             disabled={!authenticated}
             onPress={() => {
               setMenuVisible(false);
+              firebase
+                .database()
+                .ref("users")
+                .child(firebase.auth().currentUser.uid)
+                .update({
+                  online: false,
+                  lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                });
               firebase.auth().signOut();
             }}
           />

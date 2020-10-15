@@ -13,8 +13,8 @@ class ContactsScreen extends React.Component {
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
+      this.setState({ data: [] });
       if (user) {
-        this.setState({ data: [] });
         this.db = firebase
           .database()
           .ref("users")
@@ -28,11 +28,15 @@ class ContactsScreen extends React.Component {
                 .ref("users")
                 .child(item.val().userUID);
               tempDB
-                .once("value", (snapshot) => {
+                .once("value", (snapshotTwo) => {
                   this.setState({
                     data: [
                       ...this.state.data,
-                      { ...snapshot.val(), PM: item.val(), key: snapshot.key },
+                      {
+                        ...snapshotTwo.val(),
+                        PM: item.val(),
+                        key: snapshotTwo.key,
+                      },
                     ],
                   });
                 })
@@ -50,13 +54,21 @@ class ContactsScreen extends React.Component {
         <FlatList
           data={this.state.data}
           style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <Contact
-              onPress={() =>
+              onPress={() => {
+                firebase
+                  .database()
+                  .ref("users")
+                  .child(firebase.auth().currentUser.uid)
+                  .update({
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                  });
                 this.props.navigation.navigate("PrivateMessageScreen", {
                   Item: item,
-                })
-              }
+                });
+              }}
               Item={item}
               navigation={this.props.navigation}
             />

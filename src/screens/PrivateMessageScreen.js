@@ -17,16 +17,19 @@ import { IconButton, ProgressBar, withTheme } from "react-native-paper";
 import BackButton from "../components/BackButton";
 import ChatMessage from "../components/ChatMessage";
 import * as ImagePicker from "expo-image-picker";
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
 
 class PrivateMessageScreen extends React.Component {
   constructor(props) {
     super(props);
+    let date = new Date(props.route.params.Item.lastOnline);
     this.state = {
       data: [],
       image: null,
       messageText: "",
       submitting: false,
+      online: props.route.params.Item.online,
+      lastSeen: date.getHours() + ":" + date.getMinutes(),
     };
     this.Item = this.props.route.params.Item;
   }
@@ -41,10 +44,22 @@ class PrivateMessageScreen extends React.Component {
         data: [...this.state.data, { ...snapshot.val(), key: snapshot.key }],
       });
     });
+    this.dbTwo = firebase.database().ref("users").child(this.Item.PM.userUID);
+    this.dbTwo.on("value", (snapshot) =>
+      this.setState({ online: snapshot.val().online })
+    );
   }
 
   componentWillUnmount() {
     this.db.off();
+    this.dbTwo.off();
+    firebase
+      .database()
+      .ref("users")
+      .child(firebase.auth().currentUser.uid)
+      .update({
+        lastOnline: firebase.database.ServerValue.TIMESTAMP,
+      });
   }
 
   pickImage = async () => {
@@ -92,6 +107,7 @@ class PrivateMessageScreen extends React.Component {
                 text: this.state.messageText.trim(),
                 userUID: firebase.auth().currentUser.uid,
                 imageUrl: url,
+                time: firebase.database.ServerValue.TIMESTAMP,
               })
               .then(() => {
                 this.setState({
@@ -111,6 +127,7 @@ class PrivateMessageScreen extends React.Component {
           .set({
             text: this.state.messageText.trim(),
             userUID: firebase.auth().currentUser.uid,
+            time: firebase.database.ServerValue.TIMESTAMP,
           })
           .then(() => {
             this.setState({ submitting: false, messageText: "", image: null });
@@ -131,7 +148,7 @@ class PrivateMessageScreen extends React.Component {
         backgroundColor: colors.header,
         elevation: 4,
       },
-      username: { color: colors.text, fontSize: 18, marginStart: 12 },
+      username: { color: colors.text, fontSize: 18 },
       textBox: {
         flexDirection: "column",
         padding: 4,
@@ -144,6 +161,10 @@ class PrivateMessageScreen extends React.Component {
         flexDirection: "row",
         justifyContent: "flex-end",
       },
+      status: {
+        fontSize: 12,
+        color: colors.placeholder,
+      },
     });
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -152,7 +173,14 @@ class PrivateMessageScreen extends React.Component {
             imageUrl={this.Item.profilePictureUrl}
             navigation={this.props.navigation}
           />
-          <Text style={styles.username}>{this.Item.username}</Text>
+          <View style={{ flex: 1, marginStart: 12 }}>
+            <Text style={styles.username}>{this.Item.username}</Text>
+            <Text style={styles.status}>
+              {this.state.online
+                ? "online"
+                : "last seen " + this.state.lastSeen}
+            </Text>
+          </View>
         </View>
         <FlatList
           data={this.state.data}

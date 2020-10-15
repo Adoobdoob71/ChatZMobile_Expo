@@ -26,6 +26,13 @@ class SignIn extends React.Component {
       .auth()
       .signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
+        firebase
+          .database()
+          .ref("users")
+          .child(firebase.auth().currentUser.uid)
+          .update({
+            online: true,
+          });
         this.setState({ loading: false });
         this.props.navigation.pop();
       })
