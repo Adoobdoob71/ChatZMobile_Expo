@@ -35,7 +35,7 @@ class BackButton extends React.Component {
         }}>
         <TouchableRipple
           onPress={() => this.props.navigation.pop()}
-          background={TouchableNativeFeedback.Ripple("#FFFFFF", true)}>
+          background={TouchableNativeFeedback.Ripple("#FFFFFF42", true)}>
           <View style={styles.body}>
             <MaterialIcons name="chevron-left" color={colors.text} size={24} />
             <Image source={{ uri: this.props.imageUrl }} style={styles.image} />

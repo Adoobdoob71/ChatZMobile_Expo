@@ -2,8 +2,8 @@
   "name": "ChatZCP",
   "displayName": "ChatZCP",
   "expo": {
-    "name": "ChatZCrossPlatform",
-    "slug": "ChatZCrossPlatform",
+    "name": "ChatZCP",
+    "slug": "ChatZCP",
     "version": "1.0.0",
     "android": {
       "package": "com.chatzcrossplatform",
