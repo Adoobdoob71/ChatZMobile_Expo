@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, Image, StyleSheet, TouchableNativeFeedback } from "react-native";
 import { TouchableRipple, withTheme } from "react-native-paper";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -21,16 +21,27 @@ class BackButton extends React.Component {
         width: 32,
         height: 32,
         borderRadius: 16,
-        marginLeft: 4,
+        marginLeft: 8,
       },
     });
     return (
-      <TouchableRipple onPress={() => this.props.navigation.pop()}>
-        <View style={styles.body}>
-          <MaterialIcons name="chevron-left" color={colors.text} size={24} />
-          <Image source={{ uri: this.props.imageUrl }} style={styles.image} />
-        </View>
-      </TouchableRipple>
+      <View
+        style={{
+          borderRadius: 24,
+          width: 68,
+          height: 40,
+          overflow: "hidden",
+          justifyContent: "center",
+        }}>
+        <TouchableRipple
+          onPress={() => this.props.navigation.pop()}
+          background={TouchableNativeFeedback.Ripple("#FFFFFF", true)}>
+          <View style={styles.body}>
+            <MaterialIcons name="chevron-left" color={colors.text} size={24} />
+            <Image source={{ uri: this.props.imageUrl }} style={styles.image} />
+          </View>
+        </TouchableRipple>
+      </View>
     );
   }
 }

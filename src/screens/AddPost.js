@@ -67,6 +67,7 @@ class AddPost extends React.Component {
               groupImage: this.Item.imageUrl,
               user: firebase.auth().currentUser.email,
               imageUrl: url,
+              time: firebase.database.ServerValue.TIMESTAMP,
             })
             .then(() => {
               this.props.navigation.pop();

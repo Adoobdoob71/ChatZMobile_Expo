@@ -21,6 +21,7 @@ class ContactsScreen extends React.Component {
           .child(user.uid)
           .child("private_messages");
         this.db.on("value", (snapshot) => {
+          this.setState({ data: [] });
           if (snapshot.exists()) {
             snapshot.forEach((item) => {
               let tempDB = firebase
@@ -69,6 +70,7 @@ class ContactsScreen extends React.Component {
                   Item: item,
                 });
               }}
+              PrivateMessageContact={true}
               Item={item}
               navigation={this.props.navigation}
             />

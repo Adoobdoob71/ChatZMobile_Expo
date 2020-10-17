@@ -13,6 +13,7 @@ import {
 import PostCard from "../components/PostCard";
 import * as firebase from "firebase";
 import { withTheme, IconButton, FAB, Portal } from "react-native-paper";
+import { Notifications } from "expo";
 
 class Home extends React.Component {
   constructor(props) {
@@ -25,8 +26,12 @@ class Home extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.db = firebase.database().ref("posts");
+  async componentDidMount() {
+    this.db = firebase
+      .database()
+      .ref("posts")
+      .orderByChild("time")
+      .limitToLast(20);
     this.LoadPosts();
     AppState.addEventListener("change", this.handleUserStatus);
   }

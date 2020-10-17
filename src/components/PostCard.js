@@ -182,6 +182,7 @@ class PostCard extends React.Component {
             onPress={() =>
               this.props.navigation.navigate("ImageScreen", {
                 imageUrl: this.Item.imageUrl,
+                title: this.Item.title,
               })
             }>
             <Card.Cover

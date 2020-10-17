@@ -11,9 +11,16 @@ import {
   RefreshControl,
   Dimensions,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import * as firebase from "firebase";
-import { IconButton, ProgressBar, withTheme } from "react-native-paper";
+import {
+  IconButton,
+  Menu,
+  ProgressBar,
+  TouchableRipple,
+  withTheme,
+} from "react-native-paper";
 import BackButton from "../components/BackButton";
 import ChatMessage from "../components/ChatMessage";
 import * as ImagePicker from "expo-image-picker";
@@ -25,11 +32,20 @@ class PrivateMessageScreen extends React.Component {
     let date = new Date(props.route.params.Item.lastOnline);
     this.state = {
       data: [],
+      loadingData: true,
       image: null,
       messageText: "",
       submitting: false,
+      menuVisible: false,
       online: props.route.params.Item.online,
-      lastSeen: date.getHours() + ":" + date.getMinutes(),
+      lastSeen:
+        date.getHours() +
+        ":" +
+        date.getMinutes() +
+        " on " +
+        date.getDate() +
+        "/" +
+        `${date.getMonth() + 1}`,
     };
     this.Item = this.props.route.params.Item;
   }
@@ -48,6 +64,7 @@ class PrivateMessageScreen extends React.Component {
     this.dbTwo.on("value", (snapshot) =>
       this.setState({ online: snapshot.val().online })
     );
+    this.setState({ loadingData: false });
   }
 
   componentWillUnmount() {
@@ -166,94 +183,122 @@ class PrivateMessageScreen extends React.Component {
         color: colors.placeholder,
       },
     });
-    return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.backButton}>
-          <BackButton
-            imageUrl={this.Item.profilePictureUrl}
-            navigation={this.props.navigation}
-          />
-          <View style={{ flex: 1, marginStart: 12 }}>
-            <Text style={styles.username}>{this.Item.username}</Text>
-            <Text style={styles.status}>
-              {this.state.online
-                ? "online"
-                : "last seen " + this.state.lastSeen}
-            </Text>
-          </View>
-        </View>
-        <FlatList
-          data={this.state.data}
-          ref={(ref) => (this.flatList = ref)}
-          onContentSizeChange={() =>
-            this.flatList.scrollToEnd({ animated: true })
-          }
-          style={{ flex: 1 }}
-          renderItem={({ item }) => (
-            <ChatMessage
-              Item={item}
+    if (this.state.loadingData === false)
+      return (
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.backButton}>
+            <BackButton
+              imageUrl={this.Item.profilePictureUrl}
               navigation={this.props.navigation}
-              type="private"
-              furtherData={this.Item}
             />
-          )}
-        />
-        <View style={styles.textBox} ref={(ref) => (this.view = ref)}>
-          {this.state.submitting && (
-            <ProgressBar
-              progress={this.state.progress}
-              style={{ width: "100%", marginBottom: 4 }}
-              color={colors.accent}
-            />
-          )}
-          {this.state.image != null && (
-            <ImageBackground
-              source={{ uri: this.state.image.uri }}
-              style={styles.imageBackground}>
-              <IconButton
-                icon="close"
-                onPress={() => this.setState({ image: null })}
-                color={colors.text}
-                style={{
-                  backgroundColor: colors.backgroundColor,
-                  opacity: 0.7,
-                }}
-              />
-            </ImageBackground>
-          )}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-end",
-            }}>
-            <IconButton
-              icon="attachment"
-              color={colors.text}
-              disabled={this.state.submitting}
-              onPress={() => this.pickImage()}
-            />
-            <TextInput
-              value={this.state.messageText}
-              onChangeText={(value) => this.setState({ messageText: value })}
-              placeholder="Say something nice"
-              editable={this.state.submitting == false}
-              style={styles.textInput}
-              multiline={true}
-            />
-            <IconButton
-              icon="send"
-              color={colors.text}
+            <TouchableRipple
+              style={{ flex: 1, marginStart: 12, justifyContent: "center" }}
               onPress={() =>
-                InteractionManager.runAfterInteractions(() =>
-                  this.submitMessage()
-                )
+                this.props.navigation.navigate("Profile", {
+                  userUID: this.Item.PM.userUID,
+                })
+              }>
+              <View
+                style={{ flex: 1, marginStart: 12, justifyContent: "center" }}>
+                <Text style={styles.username}>{this.Item.username}</Text>
+                <Text style={styles.status}>
+                  {this.state.online
+                    ? "online"
+                    : "last seen " + this.state.lastSeen}
+                </Text>
+              </View>
+            </TouchableRipple>
+            <Menu
+              anchor={
+                <IconButton
+                  icon="dots-vertical"
+                  onPress={() => this.setState({ menuVisible: true })}
+                  color={colors.text}
+                />
               }
-              disabled={this.state.submitting}
-            />
+              onDismiss={() => this.setState({ menuVisible: false })}
+              visible={this.state.menuVisible}>
+              <Menu.Item
+                title="Mute"
+                onPress={() => this.setState({ menuVisible: false })}
+              />
+            </Menu>
           </View>
+          <FlatList
+            data={this.state.data}
+            ref={(ref) => (this.flatList = ref)}
+            onContentSizeChange={() =>
+              this.flatList.scrollToEnd({ animated: true })
+            }
+            style={{ flex: 1 }}
+            renderItem={({ item }) => (
+              <ChatMessage
+                Item={item}
+                navigation={this.props.navigation}
+                type="private"
+                furtherData={this.Item}
+              />
+            )}
+          />
+          <View style={styles.textBox} ref={(ref) => (this.view = ref)}>
+            {this.state.submitting && (
+              <ProgressBar
+                progress={this.state.progress}
+                style={{ width: "100%", marginBottom: 4 }}
+                color={colors.accent}
+              />
+            )}
+            {this.state.image != null && (
+              <ImageBackground
+                source={{ uri: this.state.image.uri }}
+                style={styles.imageBackground}>
+                <IconButton
+                  icon="close"
+                  onPress={() => this.setState({ image: null })}
+                  color={colors.text}
+                  style={{
+                    backgroundColor: colors.backgroundColor,
+                    opacity: 0.7,
+                  }}
+                />
+              </ImageBackground>
+            )}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "flex-end",
+              }}>
+              <IconButton
+                icon="attachment"
+                color={colors.text}
+                disabled={this.state.submitting}
+                onPress={() => this.pickImage()}
+              />
+              <TextInput
+                value={this.state.messageText}
+                onChangeText={(value) => this.setState({ messageText: value })}
+                placeholder="Say something nice"
+                editable={this.state.submitting == false}
+                style={styles.textInput}
+                multiline={true}
+              />
+              <IconButton
+                icon="send"
+                color={colors.text}
+                onPress={() => this.submitMessage()}
+                disabled={this.state.submitting}
+              />
+            </View>
+          </View>
+        </SafeAreaView>
+      );
+    else
+      return (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
-      </SafeAreaView>
-    );
+      );
   }
 }
 

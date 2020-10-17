@@ -6,7 +6,8 @@ import { Provider, DefaultTheme, DarkTheme, Colors } from "react-native-paper";
 import * as firebase from "firebase";
 import { StatusBar } from "expo-status-bar";
 import { store } from "./src/redux/ThemeState";
-import { AsyncStorage } from "react-native";
+import { AsyncStorage, Platform } from "react-native";
+import { Permissions, Notifications } from "expo";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBy8QvALSQgp6OIuGsQhInsvbV5uElLHTc",
@@ -50,29 +51,38 @@ const Light_Theme = {
   },
 };
 
-export default function App() {
-  const [theme, setTheme] = React.useState(Dark_Theme);
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: Dark_Theme,
+    };
+  }
 
-  React.useEffect(() => {
+  componentDidMount() {
     store.subscribe(() =>
-      store.getState() === "dark" ? setTheme(Dark_Theme) : setTheme(Light_Theme)
+      store.getState() === "dark"
+        ? this.setState({ theme: Dark_Theme })
+        : this.setState({ theme: Light_Theme })
     );
     AsyncStorage.getItem("dark").then((result) => {
       store.dispatch({ type: result });
     });
-  }, []);
+  }
 
-  return (
-    <Provider theme={theme}>
-      <NavigationContainer theme={theme}>
-        <StatusBar
-          style={theme.dark ? "light" : "dark"}
-          backgroundColor={theme.colors.header}
-          translucent={false}
-          animated
-        />
-        <StackNavigator />
-      </NavigationContainer>
-    </Provider>
-  );
+  render() {
+    return (
+      <Provider theme={this.state.theme}>
+        <NavigationContainer theme={this.state.theme}>
+          <StatusBar
+            style={this.state.theme.dark ? "light" : "dark"}
+            backgroundColor={this.state.theme.colors.header}
+            translucent={false}
+            animated
+          />
+          <StackNavigator />
+        </NavigationContainer>
+      </Provider>
+    );
+  }
 }

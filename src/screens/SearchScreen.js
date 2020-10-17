@@ -29,7 +29,8 @@ class SearchScreen extends React.Component {
       .once("value", (snapshot) => {
         let itmData = [];
         snapshot.forEach((item) => {
-          itmData.push(item.val());
+          if (item.val().userUID !== firebase.auth().currentUser.uid)
+            itmData.push(item.val());
         });
         this.setState({ data: itmData });
       })
