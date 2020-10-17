@@ -33,12 +33,20 @@ class ChatMessage extends React.Component {
   }
 
   componentDidMount() {
-    this.db = firebase.database().ref("users").child(this.Item.userUID);
-    this.db.on("value", (snapshot) => this.setState({ user: snapshot.val() }));
+    try {
+      this.db = firebase.database().ref("users").child(this.Item.userUID);
+      this.db.on("value", (snapshot) =>
+        this.setState({ user: snapshot.val() })
+      );
+    } catch (error) {
+      this.setState({ user: null });
+    }
   }
 
   componentWillUnmount() {
-    this.db.off();
+    try {
+      this.db.off();
+    } catch (error) {}
   }
 
   edit = async () => {
@@ -81,106 +89,110 @@ class ChatMessage extends React.Component {
         paddingHorizontal: 8,
       },
     });
-    return (
-      <Menu
-        anchor={
-          <TouchableRipple
-            onPress={() => {}}
-            onLongPress={() => this.setState({ menuVisible: true })}>
-            <View
-              style={{
-                flexDirection: "row",
-                padding: 8,
-              }}>
-              <Image
-                source={{
-                  uri:
-                    this.state.user == null
-                      ? "empty"
-                      : this.state.user.profilePictureUrl,
-                }}
-                style={styles.image}
-              />
-              <View style={{ flex: 1 }}>
-                {this.state.user != null && (
-                  <Text style={{ fontSize: 12, color: colors.placeholder }}>
-                    {this.state.user.username}
+    if (this.state.user)
+      return (
+        <Menu
+          anchor={
+            <TouchableRipple
+              onPress={() => {}}
+              onLongPress={() => this.setState({ menuVisible: true })}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  padding: 8,
+                }}>
+                <Image
+                  source={{
+                    uri:
+                      this.state.user == null
+                        ? "empty"
+                        : this.state.user.profilePictureUrl,
+                  }}
+                  style={styles.image}
+                />
+                <View style={{ flex: 1 }}>
+                  {this.state.user != null && (
+                    <Text style={{ fontSize: 12, color: colors.placeholder }}>
+                      {this.state.user.username}
+                    </Text>
+                  )}
+                  {this.Item.imageUrl != undefined && (
+                    <TouchableOpacity
+                      onPress={() =>
+                        this.props.navigation.navigate("ImageScreen", {
+                          imageUrl: this.Item.imageUrl,
+                          title: this.Item.text,
+                        })
+                      }>
+                      <Card.Cover
+                        source={{ uri: this.Item.imageUrl }}
+                        style={styles.imageCover}
+                      />
+                    </TouchableOpacity>
+                  )}
+                  {this.state.editing ? (
+                    <View style={{ flexDirection: "row" }}>
+                      <TextInput
+                        value={this.state.editingText}
+                        onChangeText={(value) =>
+                          this.setState({ editingText: value })
+                        }
+                        style={styles.textInput}
+                        multiline={true}
+                      />
+                      <IconButton
+                        icon="check"
+                        color={colors.text}
+                        size={16}
+                        onPress={() => this.edit()}
+                      />
+                    </View>
+                  ) : (
+                    <Text style={{ fontSize: 14, color: colors.text }}>
+                      {this.state.editingText}
+                    </Text>
+                  )}
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: colors.placeholder,
+                      display: this.state.edited ? "flex" : "none",
+                    }}>
+                    (edited)
                   </Text>
-                )}
-                {this.Item.imageUrl != undefined && (
-                  <TouchableOpacity
-                    onPress={() =>
-                      this.props.navigation.navigate("ImageScreen", {
-                        imageUrl: this.Item.imageUrl,
-                        title: this.Item.text,
-                      })
-                    }>
-                    <Card.Cover
-                      source={{ uri: this.Item.imageUrl }}
-                      style={styles.imageCover}
-                    />
-                  </TouchableOpacity>
-                )}
-                {this.state.editing ? (
-                  <View style={{ flexDirection: "row" }}>
-                    <TextInput
-                      value={this.state.editingText}
-                      onChangeText={(value) =>
-                        this.setState({ editingText: value })
-                      }
-                      style={styles.textInput}
-                      multiline={true}
-                    />
-                    <IconButton
-                      icon="check"
-                      color={colors.text}
-                      size={16}
-                      onPress={() => this.edit()}
-                    />
-                  </View>
-                ) : (
-                  <Text style={{ fontSize: 14, color: colors.text }}>
-                    {this.state.editingText}
-                  </Text>
-                )}
-                <Text
-                  style={{
-                    fontSize: 10,
-                    color: colors.placeholder,
-                    display: this.state.edited ? "flex" : "none",
-                  }}>
-                  (edited)
-                </Text>
+                </View>
               </View>
-            </View>
-          </TouchableRipple>
-        }
-        visible={this.state.menuVisible}
-        onDismiss={() => this.setState({ menuVisible: false })}>
-        {firebase.auth().currentUser.uid === this.Item.userUID && (
+            </TouchableRipple>
+          }
+          visible={this.state.menuVisible}
+          onDismiss={() => this.setState({ menuVisible: false })}>
+          {firebase.auth().currentUser.uid === this.Item.userUID && (
+            <Menu.Item
+              title="Edit Message"
+              icon="pencil"
+              onPress={() =>
+                this.setState({ menuVisible: false, editing: true })
+              }
+            />
+          )}
           <Menu.Item
-            title="Edit Message"
-            icon="pencil"
-            onPress={() => this.setState({ menuVisible: false, editing: true })}
+            title="Remove Message"
+            icon="close"
+            onPress={() => this.setState({ menuVisible: false })}
           />
-        )}
-        <Menu.Item
-          title="Remove Message"
-          icon="close"
-          onPress={() => this.setState({ menuVisible: false })}
-        />
-        <Menu.Item
-          title="View Profile"
-          icon="account"
-          onPress={() => {
-            this.setState({ menuVisible: false });
-            this.props.navigation.navigate("Profile", {
-              userUID: this.Item.userUID,
-            });
-          }}
-        />
-      </Menu>
-    );
+          <Menu.Item
+            title="View Profile"
+            icon="account"
+            onPress={() => {
+              this.setState({ menuVisible: false });
+              this.props.navigation.navigate("Profile", {
+                userUID: this.Item.userUID,
+              });
+            }}
+          />
+        </Menu>
+      );
+    else return null;
   }
 }
 

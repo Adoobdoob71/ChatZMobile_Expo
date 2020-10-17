@@ -32,7 +32,7 @@ class PrivateMessageScreen extends React.Component {
     let date = new Date(props.route.params.Item.lastOnline);
     this.state = {
       data: [],
-      loadingData: true,
+      loadingData: false,
       image: null,
       messageText: "",
       submitting: false,
@@ -46,6 +46,7 @@ class PrivateMessageScreen extends React.Component {
         date.getDate() +
         "/" +
         `${date.getMonth() + 1}`,
+      contactTyping: false,
     };
     this.Item = this.props.route.params.Item;
   }
@@ -64,7 +65,13 @@ class PrivateMessageScreen extends React.Component {
     this.dbTwo.on("value", (snapshot) =>
       this.setState({ online: snapshot.val().online })
     );
-    this.setState({ loadingData: false });
+    try {
+      this.db
+        .child(this.Item.PM.userUID)
+        .on("value", (snapshot) =>
+          this.setState({ contactTyping: snapshot.val() })
+        );
+    } catch (error) {}
   }
 
   componentWillUnmount() {
@@ -97,10 +104,6 @@ class PrivateMessageScreen extends React.Component {
   };
 
   submitMessage = () => {
-    let databaseRef = firebase
-      .database()
-      .ref("private_messages")
-      .child(this.Item.PM.private_messages_ID);
     this.setState({ submitting: true });
     let key = databaseRef.push().key;
     if (this.state.image != null) {
@@ -118,7 +121,7 @@ class PrivateMessageScreen extends React.Component {
         (error) => Alert.alert(error.message),
         () => {
           this.storageRef.getDownloadURL().then((url) => {
-            databaseRef
+            this.db
               .child(key)
               .set({
                 text: this.state.messageText.trim(),
@@ -152,6 +155,30 @@ class PrivateMessageScreen extends React.Component {
           .catch((error) => Alert.alert(error.message));
       }
     }
+  };
+
+  updateStatus = () => {
+    this.db.update({
+      [firebase.auth().currentUser.uid]: true,
+    });
+    setTimeout(() => {
+      this.db.update({
+        [firebase.auth().currentUser.uid]: false,
+      });
+    }, 1500);
+  };
+
+  renderItem = ({ item }) => (
+    <ChatMessage
+      Item={item}
+      navigation={this.props.navigation}
+      type="private"
+      furtherData={this.Item}
+    />
+  );
+
+  onContentSizeChange = () => {
+    this.flatList.scrollToEnd({ animated: true });
   };
 
   render() {
@@ -198,13 +225,14 @@ class PrivateMessageScreen extends React.Component {
                   userUID: this.Item.PM.userUID,
                 })
               }>
-              <View
-                style={{ flex: 1, marginStart: 12, justifyContent: "center" }}>
+              <View style={{ flex: 1, justifyContent: "center" }}>
                 <Text style={styles.username}>{this.Item.username}</Text>
                 <Text style={styles.status}>
                   {this.state.online
-                    ? "online"
-                    : "last seen " + this.state.lastSeen}
+                    ? this.state.contactTyping
+                      ? "Typing..."
+                      : "Online"
+                    : "Last seen " + this.state.lastSeen}
                 </Text>
               </View>
             </TouchableRipple>
@@ -227,18 +255,9 @@ class PrivateMessageScreen extends React.Component {
           <FlatList
             data={this.state.data}
             ref={(ref) => (this.flatList = ref)}
-            onContentSizeChange={() =>
-              this.flatList.scrollToEnd({ animated: true })
-            }
+            onContentSizeChange={this.onContentSizeChange}
             style={{ flex: 1 }}
-            renderItem={({ item }) => (
-              <ChatMessage
-                Item={item}
-                navigation={this.props.navigation}
-                type="private"
-                furtherData={this.Item}
-              />
-            )}
+            renderItem={this.renderItem}
           />
           <View style={styles.textBox} ref={(ref) => (this.view = ref)}>
             {this.state.submitting && (
@@ -281,6 +300,7 @@ class PrivateMessageScreen extends React.Component {
                 editable={this.state.submitting == false}
                 style={styles.textInput}
                 multiline={true}
+                onChange={this.updateStatus}
               />
               <IconButton
                 icon="send"
