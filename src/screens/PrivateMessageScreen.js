@@ -12,6 +12,7 @@ import {
   Dimensions,
   StyleSheet,
   ActivityIndicator,
+  AppState,
 } from "react-native";
 import * as firebase from "firebase";
 import {
@@ -61,17 +62,19 @@ class PrivateMessageScreen extends React.Component {
         data: [...this.state.data, { ...snapshot.val(), key: snapshot.key }],
       });
     });
-    this.dbTwo = firebase.database().ref("users").child(this.Item.PM.userUID);
-    this.dbTwo.on("value", (snapshot) =>
-      this.setState({ online: snapshot.val().online })
-    );
-    try {
-      this.db
-        .child(this.Item.PM.userUID)
-        .on("value", (snapshot) =>
-          this.setState({ contactTyping: snapshot.val() })
-        );
-    } catch (error) {}
+    this.dbTwo = firebase.database().ref("users");
+    this.dbTwo
+      .child(this.Item.PM.userUID)
+      .on("value", (snapshot) =>
+        this.setState({ online: snapshot.val().online })
+      );
+    // try {
+    //   this.db
+    //     .child(this.Item.PM.userUID)
+    //     .on("value", (snapshot) =>
+    //       this.setState({ contactTyping: snapshot.val() })
+    //     );
+    // } catch (error) {}
   }
 
   componentWillUnmount() {
@@ -105,7 +108,7 @@ class PrivateMessageScreen extends React.Component {
 
   submitMessage = () => {
     this.setState({ submitting: true });
-    let key = databaseRef.push().key;
+    let key = this.db.child("messages").push().key;
     if (this.state.image != null) {
       this.storageRef = firebase
         .storage()
@@ -142,7 +145,7 @@ class PrivateMessageScreen extends React.Component {
       );
     } else {
       if (this.state.messageText.trim().length != 0) {
-        databaseRef
+        this.db
           .child(key)
           .set({
             text: this.state.messageText.trim(),
@@ -158,14 +161,14 @@ class PrivateMessageScreen extends React.Component {
   };
 
   updateStatus = () => {
-    this.db.update({
-      [firebase.auth().currentUser.uid]: true,
-    });
-    setTimeout(() => {
-      this.db.update({
-        [firebase.auth().currentUser.uid]: false,
-      });
-    }, 1500);
+    //   this.db.update({
+    //     [firebase.auth().currentUser.uid]: true,
+    //   });
+    //   setTimeout(() => {
+    //     this.db.update({
+    //       [firebase.auth().currentUser.uid]: false,
+    //     });
+    //   }, 1500);
   };
 
   renderItem = ({ item }) => (
@@ -176,10 +179,6 @@ class PrivateMessageScreen extends React.Component {
       furtherData={this.Item}
     />
   );
-
-  onContentSizeChange = () => {
-    this.flatList.scrollToEnd({ animated: true });
-  };
 
   render() {
     const colors = this.props.theme.colors;
@@ -257,6 +256,9 @@ class PrivateMessageScreen extends React.Component {
             ref={(ref) => (this.flatList = ref)}
             onContentSizeChange={this.onContentSizeChange}
             style={{ flex: 1 }}
+            onContentSizeChange={() =>
+              this.flatList.scrollToEnd({ animated: true })
+            }
             renderItem={this.renderItem}
           />
           <View style={styles.textBox} ref={(ref) => (this.view = ref)}>

@@ -106,6 +106,15 @@ function TopBarNavigator(props) {
               setMenuVisible(false);
               props.navigation.navigate("Register");
             }}
+            disabled={!authenticated}
+          />
+          <Menu.Item 
+            title="Create a Group"
+            disabled={!authenticated}
+            onPress={() => {
+              setMenuVisible(false);
+              props.navigation.navigate("CreateGroup");
+            }}
           />
           <Menu.Item
             title="Sign Out"

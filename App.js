@@ -6,7 +6,7 @@ import { Provider, DefaultTheme, DarkTheme, Colors } from "react-native-paper";
 import * as firebase from "firebase";
 import { StatusBar } from "expo-status-bar";
 import { store } from "./src/redux/ThemeState";
-import { AsyncStorage, Platform } from "react-native";
+import { AsyncStorage, Platform, AppState } from "react-native";
 import { Permissions, Notifications } from "expo";
 
 const firebaseConfig = {
@@ -56,10 +56,12 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       theme: Dark_Theme,
+      appState: AppState.currentState,
     };
   }
 
   componentDidMount() {
+    this.db = firebase.database().ref("users");
     store.subscribe(() =>
       store.getState() === "dark"
         ? this.setState({ theme: Dark_Theme })
@@ -68,7 +70,29 @@ export default class App extends React.Component {
     AsyncStorage.getItem("dark").then((result) => {
       store.dispatch({ type: result });
     });
+    AppState.addEventListener("change", this.handleUserStatus);
   }
+
+  handleUserStatus = (nextAppChange) => {
+    if (nextAppChange === "inactive" || nextAppChange === "background")
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          this.db.child(user.uid).update({
+            online: false,
+            lastOnline: firebase.database.ServerValue.TIMESTAMP,
+          });
+        }
+      });
+    else
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          this.db.child(user.uid).update({
+            online: true,
+          });
+        }
+      });
+    this.setState({ appState: nextAppChange });
+  };
 
   render() {
     return (

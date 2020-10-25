@@ -27,6 +27,7 @@ class Contact extends React.Component {
         .on("value", (snapshot) => {
           this.db
             .child(this.Item.PM.private_messages_ID)
+            .child("messages")
             .orderByChild("time")
             .startAt(snapshot.val())
             .on("value", (snapshotTwo) =>
@@ -34,18 +35,21 @@ class Contact extends React.Component {
             );
         });
     } else {
-      firebase
-        .database()
-        .ref("users")
-        .child(firebase.auth().currentUser.uid)
-        .child("private_messages")
-        .once("value", (snapshot) => {
-          snapshot.forEach((item) => {
-            if (item.child("userUID").val() === this.Item.userUID)
-              this.setState({ added: true, loading: false });
-          });
-        })
+      if (firebase.auth().currentUser)
+        firebase
+          .database()
+          .ref("users")
+          .child(firebase.auth().currentUser.uid)
+          .child("private_messages")
+          .once("value", (snapshot) => {
+            snapshot.forEach((item) => {
+              if (item.child("userUID").val() === this.Item.userUID)
+                this.setState({ added: true, loading: false });
+            });
+          })
         .then(() => this.setState({ loading: false }));
+      else
+        this.setState({ loading: false })
     }
   }
 
@@ -53,10 +57,10 @@ class Contact extends React.Component {
     this.db.off();
   }
 
-  addPrivateMessageRoom = () => {
+  addPrivateMessageRoom = async () => {
     this.setState({ loading: true });
     let key = this.db.push().key;
-    firebase
+    await firebase
       .database()
       .ref("users")
       .child(firebase.auth().currentUser.uid)
@@ -66,7 +70,7 @@ class Contact extends React.Component {
         userUID: this.Item.userUID,
         private_messages_ID: key,
       });
-    firebase
+    await firebase
       .database()
       .ref("users")
       .child(this.Item.userUID)
@@ -76,14 +80,7 @@ class Contact extends React.Component {
         userUID: firebase.auth().currentUser.uid,
         private_messages_ID: key,
       });
-    this.db
-      .push()
-      .child(key)
-      .set({
-        userUID: firebase.auth().currentUser.uid,
-        text: "Chat Invitation Text",
-      })
-      .then(() => this.setState({ added: true, loading: false }));
+    this.setState({ added: true, loading: false });
   };
 
   render() {
@@ -138,7 +135,7 @@ class Contact extends React.Component {
           <Button
             mode="outlined"
             icon={this.state.added ? "check" : "plus"}
-            disabled={this.state.added}
+            disabled={this.state.added || firebase.auth().currentUser ? true : firebase.auth().currentUser.uid === this.Item.userUID}
             loading={this.state.loading}
             onPress={() => this.addPrivateMessageRoom()}
             style={{

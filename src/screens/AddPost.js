@@ -52,7 +52,8 @@ class AddPost extends React.Component {
     this.storageRef.put(this.state.image.blob).on(
       "state_changed",
       (snapshot) => {
-        let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        let progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+        this.setState({ progress: progress })
       },
       (error) => Alert.alert(error.message),
       () => {

@@ -179,6 +179,14 @@ class PostCard extends React.Component {
               this.bookmarkPost();
             }}
           />
+          <Menu.Item 
+            title="Likes"
+            icon="account-heart"
+            onPress={() => {
+              this.setState({ menuVisible: false });
+              this.props.navigation.navigate("LikeScreen", {Item: this.Item, liked: this.state.liked});
+            }}
+          />
         </Menu>
       </View>
     );

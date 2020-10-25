@@ -8,7 +8,6 @@ import {
   InteractionManager,
   RefreshControl,
   StyleSheet,
-  AppState,
 } from "react-native";
 import PostCard from "../components/PostCard";
 import * as firebase from "firebase";
@@ -22,18 +21,16 @@ class Home extends React.Component {
       data: [],
       fabOpen: false,
       refreshing: true,
-      appState: AppState.currentState,
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.db = firebase
       .database()
       .ref("posts")
       .orderByChild("time")
       .limitToLast(20);
     this.LoadPosts();
-    AppState.addEventListener("change", this.handleUserStatus);
   }
 
   LoadPosts = () => {
@@ -49,29 +46,7 @@ class Home extends React.Component {
 
   componentWillUnmount() {
     this.db.off();
-    AppState.removeEventListener("change", this.handleUserStatus);
   }
-
-  handleUserStatus = (nextAppChange) => {
-    if (nextAppChange === "inactive" || nextAppChange === "background")
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          firebase.database().ref("users").child(user.uid).update({
-            online: false,
-            lastOnline: firebase.database.ServerValue.TIMESTAMP,
-          });
-        }
-      });
-    else
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          firebase.database().ref("users").child(user.uid).update({
-            online: true,
-          });
-        }
-      });
-    this.setState({ appState: nextAppChange });
-  };
 
   render() {
     const colors = this.props.theme.colors;
