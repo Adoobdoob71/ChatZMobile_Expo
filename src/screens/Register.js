@@ -167,7 +167,13 @@ class Register extends React.Component {
               style={{ alignSelf: "flex-end" }}
               onPress={() => this.register()}
               loading={this.state.loading}
-              disabled={this.state.loading}>
+              disabled={
+                this.state.loading ||
+                this.state.email.trim().length == 0 ||
+                this.state.username.trim().length == 0 ||
+                this.state.password.trim().length == 0 ||
+                !this.state.image.blob
+              }>
               Submit
             </Button>
           </ScrollView>
