@@ -20,15 +20,13 @@ class ContactsScreen extends React.Component {
           .ref("users")
           .child(user.uid)
           .child("private_messages");
+        let tempDB = firebase.database().ref("users");
         this.db.on("value", (snapshot) => {
           this.setState({ data: [] });
           if (snapshot.exists()) {
             snapshot.forEach((item) => {
-              let tempDB = firebase
-                .database()
-                .ref("users")
-                .child(item.val().userUID);
               tempDB
+                .child(item.val().userUID)
                 .once("value", (snapshotTwo) => {
                   this.setState({
                     data: [
@@ -36,7 +34,7 @@ class ContactsScreen extends React.Component {
                       {
                         ...snapshotTwo.val(),
                         PM: item.val(),
-                        key: snapshotTwo.key,
+                        key: item.key,
                       },
                     ],
                   });

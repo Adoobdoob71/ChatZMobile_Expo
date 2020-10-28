@@ -106,7 +106,7 @@ function TopBarNavigator(props) {
               setMenuVisible(false);
               props.navigation.navigate("Register");
             }}
-            disabled={!authenticated}
+            disabled={authenticated}
           />
           <Menu.Item 
             title="Create a Group"

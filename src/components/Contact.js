@@ -47,9 +47,8 @@ class Contact extends React.Component {
                 this.setState({ added: true, loading: false });
             });
           })
-        .then(() => this.setState({ loading: false }));
-      else
-        this.setState({ loading: false })
+          .then(() => this.setState({ loading: false }));
+      else this.setState({ loading: false });
     }
   }
 
@@ -69,6 +68,7 @@ class Contact extends React.Component {
       .set({
         userUID: this.Item.userUID,
         private_messages_ID: key,
+        muted: false,
       });
     await firebase
       .database()
@@ -79,6 +79,7 @@ class Contact extends React.Component {
       .set({
         userUID: firebase.auth().currentUser.uid,
         private_messages_ID: key,
+        muted: false,
       });
     this.setState({ added: true, loading: false });
   };
@@ -135,7 +136,12 @@ class Contact extends React.Component {
           <Button
             mode="outlined"
             icon={this.state.added ? "check" : "plus"}
-            disabled={this.state.added || firebase.auth().currentUser ? true : firebase.auth().currentUser.uid === this.Item.userUID}
+            disabled={
+              this.state.added ||
+              (firebase.auth().currentUser
+                ? firebase.auth().currentUser.uid === this.Item.userUID
+                : false)
+            }
             loading={this.state.loading}
             onPress={() => this.addPrivateMessageRoom()}
             style={{

@@ -38,15 +38,11 @@ class PrivateMessageScreen extends React.Component {
       messageText: "",
       submitting: false,
       menuVisible: false,
+      muted: false,
       online: props.route.params.Item.online,
-      lastSeen:
-        date.getHours() +
-        ":" +
-        date.getMinutes() +
-        " on " +
-        date.getDate() +
-        "/" +
-        `${date.getMonth() + 1}`,
+      lastSeen: `${date.getHours()}:${
+        date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
+      } on ${date.getDate()}/${date.getMonth() + 1}`,
       contactTyping: false,
     };
     this.Item = this.props.route.params.Item;
@@ -67,6 +63,13 @@ class PrivateMessageScreen extends React.Component {
       .child(this.Item.PM.userUID)
       .on("value", (snapshot) =>
         this.setState({ online: snapshot.val().online })
+      );
+    this.dbTwo
+      .child(firebase.auth().currentUser.uid)
+      .child("private_messages")
+      .child(this.Item.key)
+      .on("value", (snapshot) =>
+        this.setState({ muted: snapshot.val().muted })
       );
     // try {
     //   this.db
@@ -171,6 +174,17 @@ class PrivateMessageScreen extends React.Component {
     //   }, 1500);
   };
 
+  changeMute = () => {
+    this.setState({ menuVisible: false });
+    this.dbTwo
+      .child(firebase.auth().currentUser.uid)
+      .child("private_messages")
+      .child(this.Item.key)
+      .update({
+        muted: !this.state.muted,
+      });
+  };
+
   renderItem = ({ item }) => (
     <ChatMessage
       Item={item}
@@ -246,8 +260,9 @@ class PrivateMessageScreen extends React.Component {
               onDismiss={() => this.setState({ menuVisible: false })}
               visible={this.state.menuVisible}>
               <Menu.Item
-                title="Mute"
-                onPress={() => this.setState({ menuVisible: false })}
+                title={this.state.muted ? "Unmute" : "Mute"}
+                icon={this.state.muted ? "volume-high" : "volume-off"}
+                onPress={this.changeMute}
               />
             </Menu>
           </View>
