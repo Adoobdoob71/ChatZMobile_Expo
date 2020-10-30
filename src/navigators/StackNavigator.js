@@ -18,8 +18,9 @@ import Register from "../screens/Register";
 import ImageScreen from "../screens/ImageScreen";
 import Bookmarks from "../screens/Bookmarks";
 import AddComment from "../screens/AddComment";
-import LikeScreen from '../screens/LikeScreen';
-import CreateGroup from '../screens/CreateGroup';
+import LikeScreen from "../screens/LikeScreen";
+import CreateGroup from "../screens/CreateGroup";
+import StoryScreen from "../screens/StoryScreen";
 
 const Stack = createStackNavigator();
 
@@ -103,15 +104,20 @@ function StackNavigator(props) {
         name="AddComment"
         options={{ headerTitle: "Add a comment" }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         component={LikeScreen}
         name="LikeScreen"
         options={{ headerTitle: "Who liked the post" }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         component={CreateGroup}
         name="CreateGroup"
-        options={{ headerTitle: "Create a group!"}}
+        options={{ headerTitle: "Create a group!" }}
+      />
+      <Stack.Screen
+        component={StoryScreen}
+        name="StoryScreen"
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
